@@ -1,36 +1,23 @@
-import { Hono } from "hono";
-import type { createAdminRequest } from "../../models/admin/admin-model.js";
-import { adminService } from "../../services/admin/admin-service.js";
-import {prisma} from "../../applications/database.js";
+import { Hono } from 'hono';
+import withPrisma from '../../lib/prisma.js';
+import { AdminService } from '../../services/admin/admin-service.js';
 
-export const adminController = new Hono();
+import type { ContextWithPrisma } from '../../types/context.js';
 
-/**
- * CREATE ADMIN
- * POST /api/admin
- */
-adminController.post("/api/admin", async (c) => {
-  let request: createAdminRequest;
+export const AdminController = new Hono<ContextWithPrisma>();
 
-  try {
-    request = await c.req.json();
-  } catch {
-    return c.json(
-      { error: "Invalid or empty JSON body" },
-      400
-    );
-  }
+AdminController.post('/admin', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const request = await c.req.json();
 
-  const response = await adminService.createAdmin(request);
+  const response = await AdminService.CreateAdmin(prisma, request);
   return c.json(response, 201);
 });
 
-/**
- * LIST ADMIN
- * GET /api/admin
- */
-// adminController.get("/api/admin", async (c) => {
-//   const response = await adminService.getAdmins();
-//   return c.json(response);
-// });
+AdminController.get('/admin', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const response = await AdminService.GetAllAdmins(prisma);
+  return c.json(response, 200);
+})
+
 

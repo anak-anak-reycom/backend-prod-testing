@@ -1,21 +1,28 @@
-import type { Context, Next } from 'hono'
-import { PrismaClient } from '../generated/prisma/client.js'
-import { PrismaPg } from "@prisma/adapter-pg";
+import type { MiddlewareHandler } from 'hono';
+import { PrismaClient } from '../generated/prisma/client.js';
+import { PrismaPg } from '@prisma/adapter-pg';
+import type { ContextWithPrisma } from '../types/context.js';
 
-import * as dotenv from 'dotenv'
-dotenv.config()
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-const databaseUrl = process.env.DATABASE_URL
-function withPrisma(c: Context, next: Next) {
-  if (!c.get('prisma')) {
-    if (!databaseUrl) {
-      throw new Error('DATABASE_URL is not set')
-    }
-    const adapter = new PrismaPg({ connectionString: databaseUrl });
-    const prisma = new PrismaClient({ adapter })
+const databaseUrl = process.env.DATABASE_URL;
 
-    c.set('prisma', prisma)
-  }
-  return next()
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is not set');
 }
-export default withPrisma
+
+// ✅ SINGLETON
+const adapter = new PrismaPg({
+  connectionString: databaseUrl,
+});
+
+const prisma = new PrismaClient({ adapter });
+
+// ✅ TYPED MIDDLEWARE
+const withPrisma: MiddlewareHandler<ContextWithPrisma> = async (c, next) => {
+  c.set('prisma', prisma);
+  await next();
+};
+
+export default withPrisma;
