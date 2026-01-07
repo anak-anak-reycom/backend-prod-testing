@@ -1,36 +1,44 @@
-import { Hono } from "hono";
-import type { createAdminRequest } from "../../models/admin/admin-model.js";
-import { adminService } from "../../services/admin/admin-service.js";
-import {prisma} from "../../applications/database.js";
 
-export const adminController = new Hono();
+import { Hono } from 'hono';
+import withPrisma from '../../lib/prisma.js';
+import { AdminService } from '../../services/admin/admin-service.js';
+import { authAdminMiddleware } from '../../middlewares/middleware.js';
 
-/**
- * CREATE ADMIN
- * POST /api/admin
- */
-adminController.post("/api/admin", async (c) => {
-  let request: createAdminRequest;
+import type { ContextWithPrisma } from '../../types/context.js';
 
-  try {
-    request = await c.req.json();
-  } catch {
-    return c.json(
-      { error: "Invalid or empty JSON body" },
-      400
-    );
-  }
+export const AdminController = new Hono<ContextWithPrisma>();
 
-  const response = await adminService.createAdmin(request);
+AdminController.post('/admin', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const request = await c.req.json();
+
+  const response = await AdminService.CreateAdmin(prisma, request);
   return c.json(response, 201);
 });
 
-/**
- * LIST ADMIN
- * GET /api/admin
- */
-// adminController.get("/api/admin", async (c) => {
-//   const response = await adminService.getAdmins();
-//   return c.json(response);
-// });
+AdminController.get('/admin', authAdminMiddleware, withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const response = await AdminService.GetAllAdmins(prisma);
+  return c.json(response, 200);
+})
 
+AdminController.delete('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
+  const response = await AdminService.deleteAdminById(prisma, id);
+  return c.json(response, 200);
+})
+
+AdminController.post('/admin/login', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const request = await c.req.json();
+  const response = await AdminService.loginAdmin(prisma, request);
+  return c.json(response, 200);
+})
+
+AdminController.post('/admin/logout', authAdminMiddleware, withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const id = Number (c.req.param('id'));
+  const response = await AdminService.logoutAdmin(prisma, id);
+  return c.json(response, 200);
+})
