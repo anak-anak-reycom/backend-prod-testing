@@ -1,21 +1,56 @@
 import type { Careers } from "../../generated/prisma/client.js";
 
-
-export type CreateCarrerRequest = {
+/* =======================
+   REQUEST
+======================= */
+export type CreateCareerRequest = {
     job_date: Date;
     job_name: string;
-}
+};
 
-export type CarrerResponse = {
+/* =======================
+   DATA RESPONSE
+======================= */
+export type CareerData = {
     id_career: number;
     job_date: Date;
     job_name: string;
+};
+
+/* =======================
+   API RESPONSE WRAPPER
+======================= */
+export type ApiResponse<T> = {
+    message: string;
+    data: T;
+};
+
+export function toCareerData(
+    career: Careers
+): CareerData {
+    return {
+        id_career: career.id,
+        job_date: career.job_date,
+        job_name: career.job_name,
+    };
 }
 
-export function toAdminResponse(carrer: Careers): CarrerResponse {
+export function toCareerResponse(
+    career: Careers,
+    message: string
+): ApiResponse<CareerData> {
     return {
-        id_career: carrer.id,
-        job_date: carrer.job_date,
-        job_name: carrer.job_name,
-    }
+        message,
+        data: toCareerData(career),
+    };
+}
+
+export function toCareerListResponse(
+    careers: Careers[],
+    message: string
+): ApiResponse<CareerData[]> {
+    return {
+        message,
+        data: careers.map(toCareerData),
+    };
 }
