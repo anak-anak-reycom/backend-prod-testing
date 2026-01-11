@@ -1,4 +1,4 @@
-# REST API Example with Hono & Prisma
+# REST API PT REYCOM WITH HONO API
 
 This example shows how to implement a **REST API with TypeScript** using [Hono](https://hono.dev/) and [Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client). It connects to a Postgres database via the [`@prisma/adapter-pg`](https://www.prisma.io/docs/orm/overview/databases/postgresql/pg-driver-adapter) driver adapter and a normal `postgresql://` connection string (no Accelerate/Data Proxy required).
 
