@@ -7,6 +7,7 @@ import { ZodError } from 'zod';
 import { formatZodIssues } from './helpers/errorResponse.js';
 import { serve } from '@hono/node-server';
 import { CategoryController } from './controllers/category/category-controller.js';
+import { NewsController } from './controllers/news/news-controller.js';
 
 const app = new Hono();
 
@@ -18,6 +19,7 @@ app.route('/', AdminController);
 app.route('/', CareerController);
 app.route('/', ApplyController);
 app.route('/', CategoryController);
+app.route('/', NewsController);
 
 // ERROR HANDLER
 app.onError((err, c) => {

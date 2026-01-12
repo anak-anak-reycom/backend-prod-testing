@@ -18,6 +18,7 @@ export type NewsData = {
   content: string;
   image_news?: string;
   image_news_public_id?: string;
+  is_archived?: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -54,6 +55,7 @@ export function toNewsData(news: News): NewsData {
     content: news.content,
     image_news: news.image_news ?? undefined,
     image_news_public_id: news.image_news_public_id ?? undefined,
+    is_archived: news.is_archived ?? undefined,
     created_at: news.createdAt,
     updated_at: news.updatedAt,
   };

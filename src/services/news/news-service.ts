@@ -4,14 +4,32 @@ import { NewsRepository } from "../../repositories/news-repository.js";
 import { CarouselRepository } from "../../repositories/newsCarousel-repository.js";
 
 export class NewsService {
+
+  // =====================
+  // CREATE NEWS ONLY
+  // =====================
   static async createNews(
     prisma: PrismaClient,
-    title: string,
-    content: string
+    data: {
+      title: string
+      content: string
+      image_news?: string | null
+      image_news_public_id?: string | null
+    }
   ) {
-    return NewsRepository.createNews(prisma, title, content);
+    return NewsRepository.createNews(prisma, data);
   }
 
+  // =====================
+  // GET ALL NEWS
+  // =====================
+  static async getAllNews(prisma: PrismaClient) {
+    return NewsRepository.getAllNews(prisma);
+  }
+
+  // =====================
+  // UPLOAD MAIN IMAGE ONLY
+  // =====================
   static async uploadMainImage(
     prisma: PrismaClient,
     newsId: number,
@@ -27,6 +45,9 @@ export class NewsService {
     );
   }
 
+  // =====================
+  // UPLOAD CAROUSEL ONLY
+  // =====================
   static async uploadCarouselImages(
     prisma: PrismaClient,
     newsId: number,
@@ -44,5 +65,50 @@ export class NewsService {
     }
   }
 
-}
+  // =====================
+  // ✅ CREATE NEWS + UPLOAD IMAGES
+  // =====================
+  static async createNewsWithImages(
+    prisma: PrismaClient,
+    payload: {
+      title: string
+      content: string
+      mainImage?: File
+      carouselImages?: File[]
+    }
+  ) {
+    // 1. upload main image (optional)
+    let imageUrl: string | null = null;
+    let publicId: string | null = null;
 
+    if (payload.mainImage) {
+      const upload = await uploadImageService(payload.mainImage);
+      imageUrl = upload.url;
+      publicId = upload.public_id;
+    }
+
+    // 2. create news
+    const news = await NewsRepository.createNews(prisma, {
+      title: payload.title,
+      content: payload.content,
+      image_news: imageUrl,
+      image_news_public_id: publicId,
+    });
+
+    // 3. upload carousel images (optional)
+    if (payload.carouselImages && payload.carouselImages.length > 0) {
+      for (const file of payload.carouselImages) {
+        const upload = await uploadImageService(file);
+
+        await CarouselRepository.addCarouselImage(
+          prisma,
+          news.id,
+          upload.url,
+          upload.public_id
+        );
+      }
+    }
+
+    return news;
+  }
+}

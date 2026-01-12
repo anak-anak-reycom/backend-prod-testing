@@ -161,6 +161,7 @@ export const NewsScalarFieldEnum = {
   image_news: 'image_news',
   image_news_public_id: 'image_news_public_id',
   content: 'content',
+  is_archived: 'is_archived',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

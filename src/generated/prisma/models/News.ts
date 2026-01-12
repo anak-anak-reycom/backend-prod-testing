@@ -40,6 +40,7 @@ export type NewsMinAggregateOutputType = {
   image_news: string | null
   image_news_public_id: string | null
   content: string | null
+  is_archived: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +51,7 @@ export type NewsMaxAggregateOutputType = {
   image_news: string | null
   image_news_public_id: string | null
   content: string | null
+  is_archived: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +62,7 @@ export type NewsCountAggregateOutputType = {
   image_news: number
   image_news_public_id: number
   content: number
+  is_archived: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -80,6 +83,7 @@ export type NewsMinAggregateInputType = {
   image_news?: true
   image_news_public_id?: true
   content?: true
+  is_archived?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -90,6 +94,7 @@ export type NewsMaxAggregateInputType = {
   image_news?: true
   image_news_public_id?: true
   content?: true
+  is_archived?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +105,7 @@ export type NewsCountAggregateInputType = {
   image_news?: true
   image_news_public_id?: true
   content?: true
+  is_archived?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -197,6 +203,7 @@ export type NewsGroupByOutputType = {
   image_news: string | null
   image_news_public_id: string | null
   content: string
+  is_archived: boolean
   createdAt: Date
   updatedAt: Date
   _count: NewsCountAggregateOutputType | null
@@ -230,6 +237,7 @@ export type NewsWhereInput = {
   image_news?: Prisma.StringNullableFilter<"News"> | string | null
   image_news_public_id?: Prisma.StringNullableFilter<"News"> | string | null
   content?: Prisma.StringFilter<"News"> | string
+  is_archived?: Prisma.BoolFilter<"News"> | boolean
   createdAt?: Prisma.DateTimeFilter<"News"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"News"> | Date | string
   carousels?: Prisma.NewsCarouselListRelationFilter
@@ -241,6 +249,7 @@ export type NewsOrderByWithRelationInput = {
   image_news?: Prisma.SortOrderInput | Prisma.SortOrder
   image_news_public_id?: Prisma.SortOrderInput | Prisma.SortOrder
   content?: Prisma.SortOrder
+  is_archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   carousels?: Prisma.NewsCarouselOrderByRelationAggregateInput
@@ -255,6 +264,7 @@ export type NewsWhereUniqueInput = Prisma.AtLeast<{
   image_news?: Prisma.StringNullableFilter<"News"> | string | null
   image_news_public_id?: Prisma.StringNullableFilter<"News"> | string | null
   content?: Prisma.StringFilter<"News"> | string
+  is_archived?: Prisma.BoolFilter<"News"> | boolean
   createdAt?: Prisma.DateTimeFilter<"News"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"News"> | Date | string
   carousels?: Prisma.NewsCarouselListRelationFilter
@@ -266,6 +276,7 @@ export type NewsOrderByWithAggregationInput = {
   image_news?: Prisma.SortOrderInput | Prisma.SortOrder
   image_news_public_id?: Prisma.SortOrderInput | Prisma.SortOrder
   content?: Prisma.SortOrder
+  is_archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.NewsCountOrderByAggregateInput
@@ -284,6 +295,7 @@ export type NewsScalarWhereWithAggregatesInput = {
   image_news?: Prisma.StringNullableWithAggregatesFilter<"News"> | string | null
   image_news_public_id?: Prisma.StringNullableWithAggregatesFilter<"News"> | string | null
   content?: Prisma.StringWithAggregatesFilter<"News"> | string
+  is_archived?: Prisma.BoolWithAggregatesFilter<"News"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"News"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"News"> | Date | string
 }
@@ -293,6 +305,7 @@ export type NewsCreateInput = {
   image_news?: string | null
   image_news_public_id?: string | null
   content: string
+  is_archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   carousels?: Prisma.NewsCarouselCreateNestedManyWithoutNewsInput
@@ -304,6 +317,7 @@ export type NewsUncheckedCreateInput = {
   image_news?: string | null
   image_news_public_id?: string | null
   content: string
+  is_archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   carousels?: Prisma.NewsCarouselUncheckedCreateNestedManyWithoutNewsInput
@@ -314,6 +328,7 @@ export type NewsUpdateInput = {
   image_news?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_news_public_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   carousels?: Prisma.NewsCarouselUpdateManyWithoutNewsNestedInput
@@ -325,6 +340,7 @@ export type NewsUncheckedUpdateInput = {
   image_news?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_news_public_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   carousels?: Prisma.NewsCarouselUncheckedUpdateManyWithoutNewsNestedInput
@@ -336,6 +352,7 @@ export type NewsCreateManyInput = {
   image_news?: string | null
   image_news_public_id?: string | null
   content: string
+  is_archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -345,6 +362,7 @@ export type NewsUpdateManyMutationInput = {
   image_news?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_news_public_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -355,6 +373,7 @@ export type NewsUncheckedUpdateManyInput = {
   image_news?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_news_public_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -365,6 +384,7 @@ export type NewsCountOrderByAggregateInput = {
   image_news?: Prisma.SortOrder
   image_news_public_id?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  is_archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -379,6 +399,7 @@ export type NewsMaxOrderByAggregateInput = {
   image_news?: Prisma.SortOrder
   image_news_public_id?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  is_archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -389,6 +410,7 @@ export type NewsMinOrderByAggregateInput = {
   image_news?: Prisma.SortOrder
   image_news_public_id?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  is_archived?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -400,6 +422,10 @@ export type NewsSumOrderByAggregateInput = {
 export type NewsScalarRelationFilter = {
   is?: Prisma.NewsWhereInput
   isNot?: Prisma.NewsWhereInput
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type NewsCreateNestedOneWithoutCarouselsInput = {
@@ -421,6 +447,7 @@ export type NewsCreateWithoutCarouselsInput = {
   image_news?: string | null
   image_news_public_id?: string | null
   content: string
+  is_archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -431,6 +458,7 @@ export type NewsUncheckedCreateWithoutCarouselsInput = {
   image_news?: string | null
   image_news_public_id?: string | null
   content: string
+  is_archived?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -456,6 +484,7 @@ export type NewsUpdateWithoutCarouselsInput = {
   image_news?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_news_public_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -466,6 +495,7 @@ export type NewsUncheckedUpdateWithoutCarouselsInput = {
   image_news?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   image_news_public_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  is_archived?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -507,6 +537,7 @@ export type NewsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   image_news?: boolean
   image_news_public_id?: boolean
   content?: boolean
+  is_archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   carousels?: boolean | Prisma.News$carouselsArgs<ExtArgs>
@@ -519,6 +550,7 @@ export type NewsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   image_news?: boolean
   image_news_public_id?: boolean
   content?: boolean
+  is_archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["news"]>
@@ -529,6 +561,7 @@ export type NewsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   image_news?: boolean
   image_news_public_id?: boolean
   content?: boolean
+  is_archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["news"]>
@@ -539,11 +572,12 @@ export type NewsSelectScalar = {
   image_news?: boolean
   image_news_public_id?: boolean
   content?: boolean
+  is_archived?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type NewsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "image_news" | "image_news_public_id" | "content" | "createdAt" | "updatedAt", ExtArgs["result"]["news"]>
+export type NewsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "image_news" | "image_news_public_id" | "content" | "is_archived" | "createdAt" | "updatedAt", ExtArgs["result"]["news"]>
 export type NewsInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   carousels?: boolean | Prisma.News$carouselsArgs<ExtArgs>
   _count?: boolean | Prisma.NewsCountOutputTypeDefaultArgs<ExtArgs>
@@ -562,6 +596,7 @@ export type $NewsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     image_news: string | null
     image_news_public_id: string | null
     content: string
+    is_archived: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["news"]>
@@ -993,6 +1028,7 @@ export interface NewsFieldRefs {
   readonly image_news: Prisma.FieldRef<"News", 'String'>
   readonly image_news_public_id: Prisma.FieldRef<"News", 'String'>
   readonly content: Prisma.FieldRef<"News", 'String'>
+  readonly is_archived: Prisma.FieldRef<"News", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"News", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"News", 'DateTime'>
 }

@@ -87,6 +87,7 @@ model News {
   image_news           String?
   image_news_public_id String?
   content              String
+  is_archived          Boolean             @default(false)
   carousels            NewsCarousel[]
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt

@@ -1,82 +1,53 @@
-// import { Hono } from "hono";
-// import withPrisma from "../../lib/prisma.js";
-// import { authAdminMiddleware } from "../../middlewares/middleware.js";
-// import { NewsService } from "../../services/news/news-service.js";
-// import type { ContextWithPrisma } from "../../types/context.js";
+import { Hono } from "hono";
+import withPrisma from "../../lib/prisma.js";
+import { authAdminMiddleware } from "../../middlewares/middleware.js";
+import { NewsService } from "../../services/news/news-service.js";
+import type { ContextWithPrisma } from "../../types/context.js";
+import { NewsValidation } from "../../validations/news/news-validation.js";
 
-// export const NewsController = new Hono<ContextWithPrisma>();
+export const NewsController = new Hono<ContextWithPrisma>();
 
-// // ===============================
-// // GET ALL NEWS
-// // ===============================
-// NewsController.get("/news", withPrisma, async (c) => {
-//   const prisma = c.get("prisma");
-//   const response = await NewsService.GetAllNews(prisma);
-//   return c.json(response, 200);
-// });
+// ===============================
+// GET ALL NEWS
+// ===============================
+NewsController.get("/news", withPrisma, async (c) => {
+  const prisma = c.get("prisma");
+  const response = await NewsService.getAllNews(prisma);
+  return c.json(response, 200);
+});
 
-// // ===============================
-// // GET NEWS BY ID
-// // ===============================
-// NewsController.get("/news/:id", withPrisma, async (c) => {
-//   const prisma = c.get("prisma");
-//   const id_news = Number(c.req.param("id"));
-//   const response = await NewsService.GetNewsById(prisma, id_news);
-//   return c.json(response, 200);
-// });
+// ===============================
+// CREATE NEWS (JSON)
+// ===============================
+NewsController.post(
+  "/news",
+  authAdminMiddleware,
+  withPrisma,
+  async (c) => {
+    const prisma = c.get("prisma");
 
-// // ===============================
-// // CREATE NEWS
-// // ===============================
-// NewsController.post(
-//   "/news",
-//   authAdminMiddleware,
-//   withPrisma,
-//   async (c) => {
-//     const prisma = c.get("prisma");
-//     const body = await c.req.parseBody();
+    const body = await c.req.parseBody();
 
-//     const response = await NewsService.CreateNews(prisma, body);
-//     return c.json(response, 201);
-//   }
-// );
+    const title = body["title"] as string;
+    const content = body["content"] as string;
+    const mainImage = body["image"] as File | undefined;
 
-// // ===============================
-// // UPDATE NEWS
-// // ===============================
-// NewsController.patch(
-//   "/news/:id",
-//   authAdminMiddleware,
-//   withPrisma,
-//   async (c) => {
-//     const prisma = c.get("prisma");
-//     const id_news = Number(c.req.param("id"));
-//     const body = await c.req.parseBody();
+    const carouselRaw = body["carousels"];
+    const carouselImages = Array.isArray(carouselRaw)
+      ? carouselRaw.filter((f): f is File => f instanceof File)
+      : [];
 
-//     const response = await NewsService.UpdateNewsById(
-//       prisma,
-//       id_news,
-//       body
-//     );
-//     return c.json(response, 200);
-//   }
-// );
+    if (!title || !content) {
+      return c.json({ message: "Title and content are required" }, 400);
+    }
 
-// // ===============================
-// // DELETE NEWS
-// // ===============================
-// NewsController.delete(
-//   "/news/:id",
-//   authAdminMiddleware,
-//   withPrisma,
-//   async (c) => {
-//     const prisma = c.get("prisma");
-//     const id_news = Number(c.req.param("id"));
+    const news = await NewsService.createNewsWithImages(prisma, {
+      title,
+      content,
+      mainImage: mainImage instanceof File ? mainImage : undefined,
+      carouselImages,
+    });
 
-//     const response = await NewsService.DeleteNewsById(
-//       prisma,
-//       id_news
-//     );
-//     return c.json(response, 200);
-//   }
-// );
+    return c.json({ data: news }, 201);
+  }
+);

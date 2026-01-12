@@ -124,6 +124,74 @@ const contactsData: Prisma.ContactsCreateInput[] = [
 ];
 
 /* ======================
+   Videos Seeder
+====================== */
+const videosData: Prisma.VideosCreateInput[] = [
+  {
+    title_video: "Company Profile 2025",
+    link_video: "https://youtube.com/watch?v=companyprofile",
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    title_video: "Office Tour",
+    link_video: "https://youtube.com/watch?v=officetour",
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+];
+
+
+/* ======================
+   News + Carousel Seeder
+====================== */
+const newsData: Prisma.NewsCreateInput[] = [
+  {
+    title: "Grand Opening Office Baru",
+    image_news: "https://cdn.company.com/news/office.jpg",
+    image_news_public_id: "news-office-1",
+    content: "Kami resmi membuka kantor baru di Jakarta Selatan.",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    carousels: {
+      create: [
+        {
+          image_url: "https://cdn.company.com/news/carousel1.jpg",
+          public_id: "carousel-1",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          image_url: "https://cdn.company.com/news/carousel2.jpg",
+          public_id: "carousel-2",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+    },
+  },
+  {
+    title: "Employee Gathering 2025",
+    image_news: "https://cdn.company.com/news/gathering.jpg",
+    image_news_public_id: "news-gathering-1",
+    content: "Kegiatan gathering tahunan untuk seluruh karyawan.",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    carousels: {
+      create: [
+        {
+          image_url: "https://cdn.company.com/news/gathering1.jpg",
+          public_id: "gathering-1",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+    },
+  },
+];
+
+
+/* ======================
    Main Seeder Function
 ====================== */
 export async function main() {
@@ -144,6 +212,15 @@ export async function main() {
   for (const contact of contactsData) {
     await prisma.contacts.create({ data: contact });
   }
+
+    for (const video of videosData) {
+    await prisma.videos.create({ data: video });
+  }
+
+  for (const news of newsData) {
+    await prisma.news.create({ data: news });
+  }
+
 
   console.log("✅ Seeding selesai");
 }
