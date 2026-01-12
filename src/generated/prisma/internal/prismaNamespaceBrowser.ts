@@ -56,7 +56,9 @@ export const ModelName = {
   Careers: 'Careers',
   Applys: 'Applys',
   Contacts: 'Contacts',
-  Videos: 'Videos'
+  Videos: 'Videos',
+  News: 'News',
+  NewsCarousel: 'NewsCarousel'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -151,6 +153,31 @@ export const VideosScalarFieldEnum = {
 } as const
 
 export type VideosScalarFieldEnum = (typeof VideosScalarFieldEnum)[keyof typeof VideosScalarFieldEnum]
+
+
+export const NewsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  image_news: 'image_news',
+  image_news_public_id: 'image_news_public_id',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NewsScalarFieldEnum = (typeof NewsScalarFieldEnum)[keyof typeof NewsScalarFieldEnum]
+
+
+export const NewsCarouselScalarFieldEnum = {
+  id: 'id',
+  newsId: 'newsId',
+  image_url: 'image_url',
+  public_id: 'public_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NewsCarouselScalarFieldEnum = (typeof NewsCarouselScalarFieldEnum)[keyof typeof NewsCarouselScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -47,3 +47,13 @@ export type Contacts = Prisma.ContactsModel
  * 
  */
 export type Videos = Prisma.VideosModel
+/**
+ * Model News
+ * 
+ */
+export type News = Prisma.NewsModel
+/**
+ * Model NewsCarousel
+ * 
+ */
+export type NewsCarousel = Prisma.NewsCarouselModel

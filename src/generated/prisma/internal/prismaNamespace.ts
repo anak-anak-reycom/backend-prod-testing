@@ -389,7 +389,9 @@ export const ModelName = {
   Careers: 'Careers',
   Applys: 'Applys',
   Contacts: 'Contacts',
-  Videos: 'Videos'
+  Videos: 'Videos',
+  News: 'News',
+  NewsCarousel: 'NewsCarousel'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -405,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "admin" | "category" | "careers" | "applys" | "contacts" | "videos"
+    modelProps: "admin" | "category" | "careers" | "applys" | "contacts" | "videos" | "news" | "newsCarousel"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -853,6 +855,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    News: {
+      payload: Prisma.$NewsPayload<ExtArgs>
+      fields: Prisma.NewsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NewsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NewsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        findFirst: {
+          args: Prisma.NewsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NewsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        findMany: {
+          args: Prisma.NewsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>[]
+        }
+        create: {
+          args: Prisma.NewsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        createMany: {
+          args: Prisma.NewsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NewsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>[]
+        }
+        delete: {
+          args: Prisma.NewsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        update: {
+          args: Prisma.NewsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        deleteMany: {
+          args: Prisma.NewsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NewsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NewsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>[]
+        }
+        upsert: {
+          args: Prisma.NewsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsPayload>
+        }
+        aggregate: {
+          args: Prisma.NewsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNews>
+        }
+        groupBy: {
+          args: Prisma.NewsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NewsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsCountAggregateOutputType> | number
+        }
+      }
+    }
+    NewsCarousel: {
+      payload: Prisma.$NewsCarouselPayload<ExtArgs>
+      fields: Prisma.NewsCarouselFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NewsCarouselFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NewsCarouselFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>
+        }
+        findFirst: {
+          args: Prisma.NewsCarouselFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NewsCarouselFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>
+        }
+        findMany: {
+          args: Prisma.NewsCarouselFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>[]
+        }
+        create: {
+          args: Prisma.NewsCarouselCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>
+        }
+        createMany: {
+          args: Prisma.NewsCarouselCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NewsCarouselCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>[]
+        }
+        delete: {
+          args: Prisma.NewsCarouselDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>
+        }
+        update: {
+          args: Prisma.NewsCarouselUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>
+        }
+        deleteMany: {
+          args: Prisma.NewsCarouselDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NewsCarouselUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NewsCarouselUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>[]
+        }
+        upsert: {
+          args: Prisma.NewsCarouselUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsCarouselPayload>
+        }
+        aggregate: {
+          args: Prisma.NewsCarouselAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNewsCarousel>
+        }
+        groupBy: {
+          args: Prisma.NewsCarouselGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsCarouselGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NewsCarouselCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsCarouselCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -968,6 +1118,31 @@ export const VideosScalarFieldEnum = {
 } as const
 
 export type VideosScalarFieldEnum = (typeof VideosScalarFieldEnum)[keyof typeof VideosScalarFieldEnum]
+
+
+export const NewsScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  image_news: 'image_news',
+  image_news_public_id: 'image_news_public_id',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NewsScalarFieldEnum = (typeof NewsScalarFieldEnum)[keyof typeof NewsScalarFieldEnum]
+
+
+export const NewsCarouselScalarFieldEnum = {
+  id: 'id',
+  newsId: 'newsId',
+  image_url: 'image_url',
+  public_id: 'public_id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NewsCarouselScalarFieldEnum = (typeof NewsCarouselScalarFieldEnum)[keyof typeof NewsCarouselScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1140,6 +1315,8 @@ export type GlobalOmitConfig = {
   applys?: Prisma.ApplysOmit
   contacts?: Prisma.ContactsOmit
   videos?: Prisma.VideosOmit
+  news?: Prisma.NewsOmit
+  newsCarousel?: Prisma.NewsCarouselOmit
 }
 
 /* Types for Logging */

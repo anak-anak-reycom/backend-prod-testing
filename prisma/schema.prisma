@@ -80,3 +80,27 @@ model Videos {
 
   @@map("videos")
 }
+
+model News {
+  id                   Int                 @id @default(autoincrement())
+  title                String
+  image_news           String?
+  image_news_public_id String?
+  content              String
+  carousels            NewsCarousel[]
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+}
+
+model NewsCarousel {
+  id          Int      @id @default(autoincrement())
+  newsId      Int
+  image_url   String
+  public_id   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  news        News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
+}
+
+
