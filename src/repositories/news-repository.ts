@@ -23,6 +23,15 @@ static createNews(
   });
 }
 
+static updateNewsById (
+  prisma: PrismaClient,
+  data: {
+
+  }
+) {
+  return
+}
+
   static async updateMainImage(
     prisma: PrismaClient,
     newsId: number,

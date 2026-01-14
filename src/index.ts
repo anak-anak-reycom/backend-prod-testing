@@ -8,6 +8,7 @@ import { formatZodIssues } from './helpers/errorResponse.js';
 import { serve } from '@hono/node-server';
 import { CategoryController } from './controllers/category/category-controller.js';
 import { NewsController } from './controllers/news/news-controller.js';
+import { CarouselController } from './controllers/carousel/carousel-controller.js';
 
 const app = new Hono();
 
@@ -20,6 +21,7 @@ app.route('/', CareerController);
 app.route('/', ApplyController);
 app.route('/', CategoryController);
 app.route('/', NewsController);
+app.route('/', CarouselController)
 
 // ERROR HANDLER
 app.onError((err, c) => {

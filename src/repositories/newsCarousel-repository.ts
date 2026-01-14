@@ -15,4 +15,16 @@ export class CarouselRepository {
       },
     });
   }
+  static async getAllCarousel(
+    prisma: PrismaClient
+  ) {
+    return prisma.newsCarousel.findMany()
+}
+
+// static async updateCarouselById(
+//     prisma: PrismaClient, 
+//     carouseld: String
+// ) {
+//   return prisma.
+// }
 }

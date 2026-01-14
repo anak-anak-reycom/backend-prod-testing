@@ -46,26 +46,6 @@ export class NewsService {
   }
 
   // =====================
-  // UPLOAD CAROUSEL ONLY
-  // =====================
-  static async uploadCarouselImages(
-    prisma: PrismaClient,
-    newsId: number,
-    files: File[]
-  ) {
-    for (const file of files) {
-      const upload = await uploadImageService(file);
-
-      await CarouselRepository.addCarouselImage(
-        prisma,
-        newsId,
-        upload.url,
-        upload.public_id
-      );
-    }
-  }
-
-  // =====================
   // ✅ CREATE NEWS + UPLOAD IMAGES
   // =====================
   static async createNewsWithImages(
@@ -77,7 +57,7 @@ export class NewsService {
       carouselImages?: File[]
     }
   ) {
-    // 1. upload main image (optional)
+    
     let imageUrl: string | null = null;
     let publicId: string | null = null;
 
@@ -87,7 +67,6 @@ export class NewsService {
       publicId = upload.public_id;
     }
 
-    // 2. create news
     const news = await NewsRepository.createNews(prisma, {
       title: payload.title,
       content: payload.content,
@@ -95,7 +74,6 @@ export class NewsService {
       image_news_public_id: publicId,
     });
 
-    // 3. upload carousel images (optional)
     if (payload.carouselImages && payload.carouselImages.length > 0) {
       for (const file of payload.carouselImages) {
         const upload = await uploadImageService(file);
