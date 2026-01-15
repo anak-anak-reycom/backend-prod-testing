@@ -50,4 +50,33 @@ NewsController.post(
 
     return c.json({ data: news }, 201);
   }
+
+  // ===============================
+  // UPDATE NEWS(JSON)
+  // ===============================
 );
+NewsController.patch(
+    "/news/:id",
+    authAdminMiddleware,
+    withPrisma,
+    async (c) => {
+      const prisma = c.get("prisma");
+      const id_news = Number(c.req.param("id"));
+      const request = await c.req.json();
+
+      const parsed = NewsValidation.UPDATE.safeParse(request);
+      if (!parsed.success) {
+        return c.json(
+          { errors: parsed.error.issues.map((e) => e.message) },
+          400
+        );
+      }
+      const response = await NewsService.updateNewsById(
+        prisma,
+        { id: id_news, ...parsed.data }
+      );
+      return c.json(response, 200);
+    }
+  );
+
+

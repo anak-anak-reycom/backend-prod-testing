@@ -32,6 +32,12 @@ export class ApplyService {
         });
         }
 
+        if (Object.keys(validatedRequest).length === 0) {
+        throw new HTTPException(400, {
+            message: "Minimum one field is required to create apply",
+        });
+        }
+
         const apply = await prisma.applys.create({
             data: validatedRequest,
         });
@@ -69,6 +75,7 @@ export class ApplyService {
                 message: 'Apply with this id not found',
             });
         }
+
         return toApplyResponse(
             apply,
             'Get apply successfully'
@@ -92,21 +99,16 @@ export class ApplyService {
         if (!existingApply) {
             throw new HTTPException(404, { message: 'Apply not found' });
         }
-
-        const existing = await prisma.applys.findUnique({
-        where: { email: validatedRequest.email },
-        });
-
-        if (existing) {
-        throw new HTTPException(400, {
-            message: 'Apply with the same email already exists',
-        });
-        }
-
         const updatedApply = await prisma.applys.update({
             where: { id },
             data: request,
         });
+
+        if (Object.keys(validatedRequest).length === 0) {
+        throw new HTTPException(400, {
+            message: "Minimum one field is required to update apply",
+        });
+        }
 
         return toApplyResponse(updatedApply, 'Apply updated successfully');
     }

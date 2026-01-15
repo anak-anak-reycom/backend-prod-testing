@@ -1,5 +1,5 @@
-import { PrismaClient } from "../generated/prisma/client.js";
-import { NewsValidation } from "../validations/news/news-validation.js";
+import { PrismaClient } from "../../generated/prisma/client.js";
+import { NewsValidation } from "../../validations/news/news-validation.js";
 
 export class NewsRepository {
  static getAllNews(prisma: PrismaClient) {
@@ -25,13 +25,24 @@ static createNews(
 
 static updateNewsById (
   prisma: PrismaClient,
-  data: {
-
+  data: { 
+    id: number
+    title?: string
+    content?: string
+    image_news?: string | null
+    image_news_public_id?: string | null
   }
 ) {
-  return
+  return prisma.news.update({
+    where: { id: data.id },
+    data: {
+      title: data.title,
+      content: data.content,
+      image_news: data.image_news,
+      image_news_public_id: data.image_news_public_id
+    }
+  });
 }
-
   static async updateMainImage(
     prisma: PrismaClient,
     newsId: number,

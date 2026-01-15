@@ -12,6 +12,7 @@ import { adminValidation } from '../../validations/admin/admin-validation.js';
 import { HTTPException } from 'hono/http-exception';
 import bcrypt from 'bcrypt';
 import { generateAdminToken } from '../../utils/jwt.js';
+import { AdminRepository } from '../../repositories/admin/admin-repository.js';
 
 export class AdminService {
 
@@ -23,31 +24,27 @@ export class AdminService {
     request: CreateAdminRequest,
   ): Promise<ApiResponse<AdminData>> {
 
-    const validatedRequest = adminValidation.CREATE.parse(request);
+    const validated = adminValidation.CREATE.parse(request);
 
-    const totalAdminWithSameName = await prisma.admin.count({
-      where: { name_admin: validatedRequest.name_admin },
-    });
+    const total = await AdminRepository.countByName(
+      prisma,
+      validated.name_admin,
+    );
 
-    if (totalAdminWithSameName !== 0) {
+    if (total !== 0) {
       throw new HTTPException(400, {
         message: 'Admin with the same name already exists',
       });
     }
 
-    const hashedPassword = await bcrypt.hash(validatedRequest.password, 10);
+    const hashedPassword = await bcrypt.hash(validated.password, 10);
 
-    const admin = await prisma.admin.create({
-      data: {
-        ...validatedRequest,
-        password: hashedPassword,
-      },
+    const admin = await AdminRepository.create(prisma, {
+      ...validated,
+      password: hashedPassword,
     });
 
-    return toAdminResponse(
-      admin,
-      'Admin created successfully'
-    );
+    return toAdminResponse(admin, 'Admin created successfully');
   }
 
   // ===============================
@@ -58,11 +55,12 @@ export class AdminService {
     request: LoginAdminRequest,
   ): Promise<ApiResponse<AdminData>> {
 
-    const validatedRequest = adminValidation.LOGIN.parse(request);
+    const validated = adminValidation.LOGIN.parse(request);
 
-    const admin = await prisma.admin.findFirst({
-      where: { name_admin: validatedRequest.name_admin },
-    });
+    const admin = await AdminRepository.findByName(
+      prisma,
+      validated.name_admin,
+    );
 
     if (!admin) {
       throw new HTTPException(401, {
@@ -70,12 +68,12 @@ export class AdminService {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(
-      validatedRequest.password,
+    const isValid = await bcrypt.compare(
+      validated.password,
       admin.password,
     );
 
-    if (!isPasswordValid) {
+    if (!isValid) {
       throw new HTTPException(401, {
         message: 'Invalid name or password',
       });
@@ -86,44 +84,35 @@ export class AdminService {
       name_admin: admin.name_admin,
     });
 
-    await prisma.admin.update({
-      where: { id: admin.id },
-      data: { token },
+    await AdminRepository.updateById(prisma, admin.id, {
+      token,
     });
 
-    return toAdminResponse(
-      admin,
-      'Login successful',
-      token
-    );
+    return toAdminResponse(admin, 'Login successful', token);
   }
 
   // ===============================
-// LOGOUT ADMIN
-// ===============================
-static async LogoutAdmin(
-  prisma: PrismaClient,
-  adminId: number,
-): Promise<ApiResponse<AdminData>> {
+  // LOGOUT ADMIN
+  // ===============================
+  static async LogoutAdmin(
+    prisma: PrismaClient,
+    adminId: number,
+  ): Promise<ApiResponse<AdminData>> {
 
-  const admin = await prisma.admin.findUnique({
-    where: { id: adminId },
-  });
+    const admin = await AdminRepository.findById(prisma, adminId);
 
-  if (!admin) {
-    throw new HTTPException(404, {
-      message: 'Admin not found',
+    if (!admin) {
+      throw new HTTPException(404, {
+        message: 'Admin not found',
+      });
+    }
+
+    await AdminRepository.updateById(prisma, adminId, {
+      token: null,
     });
+
+    return toAdminResponse(admin, 'Logout successful');
   }
-
-  await prisma.admin.update({
-    where: { id: adminId },
-    data: { token: null },
-  });
-
-  return toAdminResponse(admin, 'Logout successful');
-}
-
 
   // ===============================
   // UPDATE ADMIN
@@ -134,11 +123,15 @@ static async LogoutAdmin(
     request: Partial<CreateAdminRequest>,
   ): Promise<ApiResponse<AdminData>> {
 
-    const validatedRequest = adminValidation.UPDATE.parse(request);
+    const validated = adminValidation.UPDATE.parse(request);
 
-    const admin = await prisma.admin.findUnique({
-      where: { id },
-    });
+    if (Object.keys(validated).length === 0) {
+      throw new HTTPException(400, {
+        message: 'Minimum one field is required to update admin',
+      });
+    }
+
+    const admin = await AdminRepository.findById(prisma, id);
 
     if (!admin) {
       throw new HTTPException(404, {
@@ -146,15 +139,13 @@ static async LogoutAdmin(
       });
     }
 
-    const updatedAdmin = await prisma.admin.update({
-      where: { id },
-      data: validatedRequest,
-    });
-
-    return toAdminResponse(
-      updatedAdmin,
-      'Admin updated successfully'
+    const updated = await AdminRepository.updateById(
+      prisma,
+      id,
+      validated,
     );
+
+    return toAdminResponse(updated, 'Admin updated successfully');
   }
 
   // ===============================
@@ -165,9 +156,7 @@ static async LogoutAdmin(
     id: number,
   ): Promise<ApiResponse<AdminData>> {
 
-    const admin = await prisma.admin.findUnique({
-      where: { id },
-    });
+    const admin = await AdminRepository.findById(prisma, id);
 
     if (!admin) {
       throw new HTTPException(404, {
@@ -175,14 +164,9 @@ static async LogoutAdmin(
       });
     }
 
-    await prisma.admin.delete({
-      where: { id },
-    });
+    await AdminRepository.deleteById(prisma, id);
 
-    return toAdminResponse(
-      admin,
-      'Admin deleted successfully'
-    );
+    return toAdminResponse(admin, 'Admin deleted successfully');
   }
 
   // ===============================
@@ -192,12 +176,9 @@ static async LogoutAdmin(
     prisma: PrismaClient,
   ): Promise<ApiResponse<AdminData[]>> {
 
-    const admins = await prisma.admin.findMany();
+    const admins = await AdminRepository.findAll(prisma);
 
-    return toAdminListResponse(
-      admins,
-      'Get all admins successfully'
-    );
+    return toAdminListResponse(admins, 'Get all admins successfully');
   }
 
   // ===============================
@@ -207,17 +188,15 @@ static async LogoutAdmin(
     prisma: PrismaClient,
     id: number,
   ): Promise<ApiResponse<AdminData>> {
-    const admin = await prisma.admin.findUnique({
-      where: { id },
-    });
+
+    const admin = await AdminRepository.findById(prisma, id);
+
     if (!admin) {
       throw new HTTPException(404, {
         message: 'Admin with this id not found',
       });
     }
-    return toAdminResponse(
-      admin,
-      'Get admin successfully'
-    );
+
+    return toAdminResponse(admin, 'Get admin successfully');
   }
 }

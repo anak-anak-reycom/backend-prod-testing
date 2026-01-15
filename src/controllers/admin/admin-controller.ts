@@ -2,20 +2,33 @@ import { Hono } from 'hono';
 import withPrisma from '../../lib/prisma.js';
 import { AdminService } from '../../services/admin/admin-service.js';
 import { authAdminMiddleware } from '../../middlewares/middleware.js';
+import { adminValidation } from '../../validations/admin/admin-validation.js';
+import { HTTPException } from 'hono/http-exception';
 
 import type { AppContext } from '../../types/context.js';
 
 export const AdminController = new Hono<AppContext>();
 
+async function safeJson(c: any) {
+  try {
+    return await c.req.json();
+  } catch {
+    throw new HTTPException(400, {
+      message: 'Invalid or empty JSON body',
+    });
+  }
+}
 
 // ===============================
 // CREATE ADMIN
 // ===============================
 AdminController.post('/admin', withPrisma, async (c) => {
   const prisma = c.get('prisma');
-  const request = await c.req.json();
 
-  const response = await AdminService.CreateAdmin(prisma, request);
+  const raw = await safeJson(c);
+  const validated = adminValidation.CREATE.parse(raw);
+
+  const response = await AdminService.CreateAdmin(prisma, validated);
   return c.json(response, 201);
 });
 
@@ -24,6 +37,7 @@ AdminController.post('/admin', withPrisma, async (c) => {
 // ===============================
 AdminController.get('/admin', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
+
   const response = await AdminService.GetAllAdmins(prisma);
   return c.json(response, 200);
 });
@@ -34,15 +48,25 @@ AdminController.get('/admin', authAdminMiddleware, withPrisma, async (c) => {
 AdminController.get('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
+
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid admin id' });
+  }
+
   const response = await AdminService.GetAdminById(prisma, id);
   return c.json(response, 200);
-})
+});
+
 // ===============================
 // DELETE ADMIN
 // ===============================
 AdminController.delete('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
+
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid admin id' });
+  }
 
   const response = await AdminService.DeleteAdminById(prisma, id);
   return c.json(response, 200);
@@ -54,9 +78,21 @@ AdminController.delete('/admin/:id', authAdminMiddleware, withPrisma, async (c) 
 AdminController.patch('/admin/:id', authAdminMiddleware, withPrisma, async (c) => {
   const prisma = c.get('prisma');
   const id = Number(c.req.param('id'));
-  const request = await c.req.json();
 
-  const response = await AdminService.UpdateAdminById(prisma, id, request);
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid admin id' });
+  }
+
+  const raw = await safeJson(c);
+  const validated = adminValidation.UPDATE.parse(raw);
+
+  if (Object.keys(validated).length === 0) {
+    throw new HTTPException(400, {
+      message: 'Minimum one field is required to update admin',
+    });
+  }
+
+  const response = await AdminService.UpdateAdminById(prisma, id, validated);
   return c.json(response, 200);
 });
 
@@ -65,23 +101,30 @@ AdminController.patch('/admin/:id', authAdminMiddleware, withPrisma, async (c) =
 // ===============================
 AdminController.post('/admin/login', withPrisma, async (c) => {
   const prisma = c.get('prisma');
-  const request = await c.req.json();
 
-  const response = await AdminService.LoginAdmin(prisma, request);
+  const raw = await safeJson(c);
+  const validated = adminValidation.LOGIN.parse(raw);
+
+  const response = await AdminService.LoginAdmin(prisma, validated);
   return c.json(response, 200);
 });
 
 // ===============================
-// LOGOUT ADMIN (TOKEN BASED)
+// LOGOUT ADMIN
 // ===============================
-AdminController.post('/admin/logout', authAdminMiddleware, withPrisma, async (c) => {
-  const prisma = c.get('prisma');
+AdminController.post(
+  '/admin/logout',
+  authAdminMiddleware,
+  withPrisma,
+  async (c) => {
+    const prisma = c.get('prisma');
+    const admin = c.get('admin');
 
-  const admin = c.get('admin');
-  if (!admin) {
-    return c.json({ message: 'Unauthorized' }, 401);
-  }
+    if (!admin) {
+      throw new HTTPException(401, { message: 'Unauthorized' });
+    }
 
-  const response = await AdminService.LogoutAdmin(prisma, admin.id);
-  return c.json(response, 200);
-});
+    const response = await AdminService.LogoutAdmin(prisma, admin.id);
+    return c.json(response, 200);
+  },
+);

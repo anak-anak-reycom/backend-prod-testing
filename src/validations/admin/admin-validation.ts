@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export class adminValidation {
@@ -24,7 +25,7 @@ export class adminValidation {
         .min(6, 'Password must be at least 6 characters long')
         .max(100, 'Password maximum 100 characters'),
     ),
-  });
+  }).strict();
 
   static readonly UPDATE = z.object({
     name_admin: z.preprocess(
@@ -50,7 +51,7 @@ export class adminValidation {
         .max(100, 'Password maximum 100 characters')
         .optional(),
     ),
-  });
+  }).strict();
 
   static readonly LOGIN = z.object({
     name_admin: z.preprocess(
@@ -66,7 +67,7 @@ export class adminValidation {
         .min(6, 'Password must be at least 6 characters long')
         .max(100, 'Password maximum 100 characters'),
     ),
-  });
+  }).strict();
 
 
 

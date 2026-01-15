@@ -1,7 +1,7 @@
 import type { PrismaClient } from "../../generated/prisma/client.js";
 import { uploadImageService } from "../../upload/upload-service.js";
-import { NewsRepository } from "../../repositories/news-repository.js";
-import { CarouselRepository } from "../../repositories/newsCarousel-repository.js";
+import { NewsRepository } from "../../repositories/news/news-repository.js";
+import { CarouselRepository } from "../../repositories/carousel/newsCarousel-repository.js";
 
 export class NewsService {
 
@@ -28,6 +28,23 @@ export class NewsService {
   }
 
   // =====================
+  // UPDATE NEWS BY ID
+  // =====================
+  static async updateNewsById(
+    prisma: PrismaClient,
+    data: {
+      id: number
+      title?: string
+      content?: string
+      image_news?: string | null
+      image_news_public_id?: string | null
+    }
+  ) {
+    return NewsRepository.updateNewsById(prisma, data);
+  }
+  // =====================
+
+  // =====================
   // UPLOAD MAIN IMAGE ONLY
   // =====================
   static async uploadMainImage(
@@ -46,7 +63,7 @@ export class NewsService {
   }
 
   // =====================
-  // ✅ CREATE NEWS + UPLOAD IMAGES
+  // CREATE NEWS + UPLOAD IMAGES
   // =====================
   static async createNewsWithImages(
     prisma: PrismaClient,

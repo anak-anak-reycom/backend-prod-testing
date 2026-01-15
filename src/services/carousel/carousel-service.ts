@@ -1,7 +1,7 @@
 import type { PrismaClient } from "../../generated/prisma/client.js";
 import { uploadImageService } from "../../upload/upload-service.js";
-import { NewsRepository } from "../../repositories/news-repository.js";
-import { CarouselRepository } from "../../repositories/newsCarousel-repository.js";
+import { NewsRepository } from "../../repositories/news/news-repository.js";
+import { CarouselRepository } from "../../repositories/carousel/newsCarousel-repository.js";
 
 export class CarouselNewsService {
 
