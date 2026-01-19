@@ -3,7 +3,7 @@ import type { Prisma } from '../../generated/prisma/client.js';
 
 export class AdminRepository {
 
-  static countByName(
+  static countByNameAdmin(
     prisma: PrismaClient,
     name_admin: string,
   ) {
@@ -12,14 +12,14 @@ export class AdminRepository {
     });
   }
 
-  static create(
+  static createAdmin(
     prisma: PrismaClient,
     data: Prisma.AdminCreateInput,
   ) {
     return prisma.admin.create({ data });
   }
 
-  static findByName(
+  static findByNameAdmin(
     prisma: PrismaClient,
     name_admin: string,
   ) {
@@ -28,7 +28,13 @@ export class AdminRepository {
     });
   }
 
-  static findById(
+  static getAllAdmin(
+    prisma: PrismaClient,
+  ) {
+    return prisma.admin.findMany();
+  }
+
+  static findByIdAdmin(
     prisma: PrismaClient,
     id: number,
   ) {
@@ -37,7 +43,7 @@ export class AdminRepository {
     });
   }
 
-  static updateById(
+  static updateByIdAdmin(
     prisma: PrismaClient,
     id: number,
     data: Prisma.AdminUpdateInput,
@@ -48,18 +54,12 @@ export class AdminRepository {
     });
   }
 
-  static deleteById(
+  static deleteByIdAdmin(
     prisma: PrismaClient,
     id: number,
   ) {
     return prisma.admin.delete({
       where: { id },
     });
-  }
-
-  static findAll(
-    prisma: PrismaClient,
-  ) {
-    return prisma.admin.findMany();
   }
 }

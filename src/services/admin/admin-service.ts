@@ -26,7 +26,7 @@ export class AdminService {
 
     const validated = adminValidation.CREATE.parse(request);
 
-    const total = await AdminRepository.countByName(
+    const total = await AdminRepository.countByNameAdmin(
       prisma,
       validated.name_admin,
     );
@@ -39,7 +39,7 @@ export class AdminService {
 
     const hashedPassword = await bcrypt.hash(validated.password, 10);
 
-    const admin = await AdminRepository.create(prisma, {
+    const admin = await AdminRepository.createAdmin(prisma, {
       ...validated,
       password: hashedPassword,
     });
@@ -57,7 +57,7 @@ export class AdminService {
 
     const validated = adminValidation.LOGIN.parse(request);
 
-    const admin = await AdminRepository.findByName(
+    const admin = await AdminRepository.findByNameAdmin(
       prisma,
       validated.name_admin,
     );
@@ -84,7 +84,7 @@ export class AdminService {
       name_admin: admin.name_admin,
     });
 
-    await AdminRepository.updateById(prisma, admin.id, {
+    await AdminRepository.updateByIdAdmin(prisma, admin.id, {
       token,
     });
 
@@ -99,7 +99,7 @@ export class AdminService {
     adminId: number,
   ): Promise<ApiResponse<AdminData>> {
 
-    const admin = await AdminRepository.findById(prisma, adminId);
+    const admin = await AdminRepository.findByIdAdmin(prisma, adminId);
 
     if (!admin) {
       throw new HTTPException(404, {
@@ -107,7 +107,7 @@ export class AdminService {
       });
     }
 
-    await AdminRepository.updateById(prisma, adminId, {
+    await AdminRepository.updateByIdAdmin(prisma, adminId, {
       token: null,
     });
 
@@ -131,7 +131,7 @@ export class AdminService {
       });
     }
 
-    const admin = await AdminRepository.findById(prisma, id);
+    const admin = await AdminRepository.findByIdAdmin(prisma, id);
 
     if (!admin) {
       throw new HTTPException(404, {
@@ -139,7 +139,7 @@ export class AdminService {
       });
     }
 
-    const updated = await AdminRepository.updateById(
+    const updated = await AdminRepository.updateByIdAdmin(
       prisma,
       id,
       validated,
@@ -156,7 +156,7 @@ export class AdminService {
     id: number,
   ): Promise<ApiResponse<AdminData>> {
 
-    const admin = await AdminRepository.findById(prisma, id);
+    const admin = await AdminRepository.findByIdAdmin(prisma, id);
 
     if (!admin) {
       throw new HTTPException(404, {
@@ -164,7 +164,7 @@ export class AdminService {
       });
     }
 
-    await AdminRepository.deleteById(prisma, id);
+    await AdminRepository.deleteByIdAdmin(prisma, id);
 
     return toAdminResponse(admin, 'Admin deleted successfully');
   }
@@ -176,7 +176,7 @@ export class AdminService {
     prisma: PrismaClient,
   ): Promise<ApiResponse<AdminData[]>> {
 
-    const admins = await AdminRepository.findAll(prisma);
+    const admins = await AdminRepository.getAllAdmin(prisma);
 
     return toAdminListResponse(admins, 'Get all admins successfully');
   }
@@ -189,7 +189,7 @@ export class AdminService {
     id: number,
   ): Promise<ApiResponse<AdminData>> {
 
-    const admin = await AdminRepository.findById(prisma, id);
+    const admin = await AdminRepository.findByIdAdmin(prisma, id);
 
     if (!admin) {
       throw new HTTPException(404, {

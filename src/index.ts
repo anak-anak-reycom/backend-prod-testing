@@ -9,8 +9,19 @@ import { serve } from '@hono/node-server';
 import { CategoryController } from './controllers/category/category-controller.js';
 import { NewsController } from './controllers/news/news-controller.js';
 import { CarouselController } from './controllers/carousel/carousel-controller.js';
+import { cors } from 'hono/cors'
+
 
 const app = new Hono();
+
+app.use(
+  '*',
+  cors({
+    origin: '*', 
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 // ROOT
 app.get('/', (c) => c.text('Hello Hono!'));
@@ -26,7 +37,7 @@ app.route('/', CarouselController)
 // ERROR HANDLER
 app.onError((err, c) => {
 
-  // ✅ VALIDATION ERROR
+
   if (err instanceof ZodError) {
     return c.json(
       {
@@ -37,7 +48,6 @@ app.onError((err, c) => {
     );
   }
 
-  // ✅ CUSTOM HTTP ERROR
   if (err instanceof HTTPException) {
     return c.json(
       {
@@ -47,7 +57,6 @@ app.onError((err, c) => {
     );
   }
 
-  // ✅ UNKNOWN ERROR
   console.error(err);
   return c.json(
     {

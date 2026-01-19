@@ -1,138 +1,150 @@
-import { HTTPException } from 'hono/http-exception';
 import type { PrismaClient } from '../../generated/prisma/client.js';
-
 import {
   type CreateApplyRequest,
-  type ApiResponse,
   type ApplyData,
+  type ApiResponse,
   toApplyResponse,
   toApplyListResponse,
 } from '../../models/apply/apply-model.js';
 
-import { applyValidation } from '../../validations/apply/apply-validation.js';
+import { HTTPException } from 'hono/http-exception';
+import { ApplyRepository } from '../../repositories/apply/apply-repository.js';
 
 export class ApplyService {
 
   // ===============================
-  // CREATE APPLY
+  // CREATE APPLICATION
   // ===============================
-    static async CreateApply(
-        prisma: PrismaClient,
-        request: CreateApplyRequest,
-    ): Promise<ApiResponse<ApplyData>> {
+  static async CreateApplication(
+    prisma: PrismaClient,
+    request: CreateApplyRequest,
+  ): Promise<ApiResponse<ApplyData>> {
 
-        const validatedRequest = applyValidation.CREATE.parse(request);
-        const existing = await prisma.applys.findUnique({
-        where: { email: validatedRequest.email },
-        });
+    // Cek duplicate name
+    const total = await ApplyRepository.countByNameApplication(
+      prisma,
+      request.name_apply,
+    );
 
-        if (existing) {
-        throw new HTTPException(400, {
-            message: 'Apply with the same email already exists',
-        });
-        }
-
-        if (Object.keys(validatedRequest).length === 0) {
-        throw new HTTPException(400, {
-            message: "Minimum one field is required to create apply",
-        });
-        }
-
-        const apply = await prisma.applys.create({
-            data: validatedRequest,
-        });
-
-        return toApplyResponse(apply, 'Apply created successfully');
+    if (total !== 0) {
+      throw new HTTPException(400, {
+        message: 'Application with the same name already exists',
+      });
     }
 
-  // ===============================
-  // GET ALL APPLY
-  // ===============================
-    static async GetAllApply(
-        prisma: PrismaClient,
-    ): Promise<ApiResponse<ApplyData[]>> {
+    const application = await ApplyRepository.createApplication(
+      prisma,
+      request,
+    );
 
-        const applys = await prisma.applys.findMany();
+    return toApplyResponse(
+      application,
+      'Application created successfully',
+    );
+  }
 
-        return toApplyListResponse(
-            applys,
-            'Get all applys successfully'
-        );
+  // ===============================
+  // GET ALL APPLICATIONS
+  // ===============================
+  static async GetAllApplications(
+    prisma: PrismaClient,
+  ): Promise<ApiResponse<ApplyData[]>> {
+
+    const applications = await ApplyRepository.getAllApplications(prisma);
+
+    return toApplyListResponse(
+      applications,
+      'Get all applications successfully',
+    );
+  }
+
+  // ===============================
+  // GET APPLICATION BY ID
+  // ===============================
+  static async GetApplicationById(
+    prisma: PrismaClient,
+    id: number,
+  ): Promise<ApiResponse<ApplyData>> {
+
+    const application = await ApplyRepository.findApplicationById(
+      prisma,
+      id,
+    );
+
+    if (!application) {
+      throw new HTTPException(404, {
+        message: 'Application not found',
+      });
     }
 
-  // ===============================
-  // GET APPLY BY ID
-  // ===============================
-    static async GetApplyById(
-        prisma: PrismaClient,
-        id: number,
-    ): Promise<ApiResponse<ApplyData>> {
-        const apply = await prisma.applys.findUnique({
-            where: { id },
-        });
-        if (!apply) {
-            throw new HTTPException(404, {
-                message: 'Apply with this id not found',
-            });
-        }
+    return toApplyResponse(
+      application,
+      'Get application successfully',
+    );
+  }
 
-        return toApplyResponse(
-            apply,
-            'Get apply successfully'
-        );
+  // ===============================
+  // UPDATE APPLICATION
+  // ===============================
+  static async UpdateApplicationById(
+    prisma: PrismaClient,
+    id: number,
+    request: Partial<CreateApplyRequest>,
+  ): Promise<ApiResponse<ApplyData>> {
+
+    const existing = await ApplyRepository.findApplicationById(
+      prisma,
+      id,
+    );
+
+    if (!existing) {
+      throw new HTTPException(404, {
+        message: 'Application not found',
+      });
     }
 
-  // ===============================
-  // UPDATE APPLY BY ID
-  // ===============================
-    static async UpdateApplyById(
-        prisma: PrismaClient,
-        id: number,
-        request: Partial<CreateApplyRequest>,
-    ): Promise<ApiResponse<ApplyData>> {
-        const validatedRequest = applyValidation.UPDATE.parse(request);
-
-        const existingApply = await prisma.applys.findUnique({
-            where: { id },
-        });
-
-        if (!existingApply) {
-            throw new HTTPException(404, { message: 'Apply not found' });
-        }
-        const updatedApply = await prisma.applys.update({
-            where: { id },
-            data: request,
-        });
-
-        if (Object.keys(validatedRequest).length === 0) {
-        throw new HTTPException(400, {
-            message: "Minimum one field is required to update apply",
-        });
-        }
-
-        return toApplyResponse(updatedApply, 'Apply updated successfully');
+    if (Object.keys(request).length === 0) {
+      throw new HTTPException(400, {
+        message: 'Minimum one field is required to update application',
+      });
     }
 
+    const updated = await ApplyRepository.updateApplicationById(
+      prisma,
+      id,
+      request,
+    );
+
+    return toApplyResponse(
+      updated,
+      'Application updated successfully',
+    );
+  }
+
   // ===============================
-  // DELETE APPLY BY ID
+  // DELETE APPLICATION
   // ===============================
-    static async DeleteApplyById(
-        prisma: PrismaClient,
-        id: number,
-    ): Promise<ApiResponse<ApplyData>> {
+  static async DeleteApplicationById(
+    prisma: PrismaClient,
+    id: number,
+  ): Promise<ApiResponse<ApplyData>> {
 
-        const existingApply = await prisma.applys.findUnique({
-            where: { id },
-        });
+    const existing = await ApplyRepository.findApplicationById(
+      prisma,
+      id,
+    );
 
-        if (!existingApply) {
-            throw new HTTPException(404, { message: 'Apply not found' });
-        }
-
-        const deletedApply = await prisma.applys.delete({
-            where: { id },
-        });
-
-        return toApplyResponse(deletedApply, 'Apply deleted successfully');
+    if (!existing) {
+      throw new HTTPException(404, {
+        message: 'Application not found',
+      });
     }
+
+    await ApplyRepository.deleteApplicationById(prisma, id);
+
+    return toApplyResponse(
+      existing,
+      'Application deleted successfully',
+    );
+  }
 }
