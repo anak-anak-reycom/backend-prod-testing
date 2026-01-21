@@ -10,7 +10,7 @@ import { carrerValidation } from '../../validations/carrer/carrer-validation.js'
 import { HTTPException } from 'hono/http-exception';
 
 
-export class CarrerService {
+export class CareerService {
 
   // ===============================
   // CREATE CAREER
