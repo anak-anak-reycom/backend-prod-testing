@@ -4,8 +4,8 @@ import type { Careers } from "../../generated/prisma/client.js";
    REQUEST
 ======================= */
 export type CreateCareerRequest = {
-    job_date: Date;
-    job_name: string;
+    job_date?: Date;
+    job_name?: string;
     career?: {
     title: string;
     description: string;

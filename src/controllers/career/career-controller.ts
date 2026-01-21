@@ -1,58 +1,99 @@
 import { Hono } from 'hono';
 import withPrisma from '../../lib/prisma.js';
-import { authAdminMiddleware } from '../../middlewares/middleware.js';
-import { CarrerService } from '../../services/carrer/carrer-service.js';
+import { CareerService } from '../../services/carrer/carrer-service.js';
+import { carrerValidation } from '../../validations/carrer/carrer-validation.js';
+import { HTTPException } from 'hono/http-exception';
 import type { ContextWithPrisma } from '../../types/context.js';
 
 export const CareerController = new Hono<ContextWithPrisma>();
+
+async function safeJson(c: any) {
+  try {
+    return await c.req.json();
+  } catch {
+    throw new HTTPException(400, {
+      message: 'Invalid JSON body',
+    });
+  }
+}
 
 // ===============================
 // GET ALL CAREERS
 // ===============================
 CareerController.get('/career', withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const response = await CarrerService.GetAllCareers(prisma);
-    return c.json(response, 200);
-})
+  const prisma = c.get('prisma');
+  const response = await CareerService.GetAllCareers(prisma);
+  return c.json(response, 200);
+});
 
 // ===============================
 // GET CAREER BY ID
 // ===============================
 CareerController.get('/career/:id', withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const id_career = Number(c.req.param('id'));
-    const response = await CarrerService.GetCareerById(prisma, id_career);
-    return c.json(response, 200);
-})
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
+
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid career id' });
+  }
+
+  const response = await CareerService.GetCareerById(prisma, id);
+  return c.json(response, 200);
+});
 
 // ===============================
 // CREATE CAREER
 // ===============================
-CareerController.post('/career', authAdminMiddleware, withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const request = await c.req.json();
+CareerController.post('/career', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
 
-    const response = await CarrerService.CreateCareer(prisma, request);
-    return c.json(response, 201);
-})
+  const raw = await safeJson(c);
+  const validated = carrerValidation.CREATE.parse(raw);
 
-// ===============================
-// UPDATE APPLY
-// ===============================
-CareerController.patch('/career/:id', authAdminMiddleware, withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const id_career = Number(c.req.param('id'));
-    const request = await c.req.json();
-    const response = await CarrerService.UpdateCareerById(prisma, id_career, request);
-    return c.json(response, 200);
-})
+  const response = await CareerService.CreateCareer(prisma, validated);
+  return c.json(response, 201);
+});
 
 // ===============================
-// DELETE APPLY
+// UPDATE CAREER
 // ===============================
-CareerController.delete('/career/:id', authAdminMiddleware, withPrisma, async (c) => {
-    const prisma = c.get('prisma');
-    const id_career = Number(c.req.param('id'));
-    const response = await CarrerService.DeleteCareerById(prisma, id_career);
-    return c.json(response, 200);
-})
+CareerController.patch('/career/:id', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
+
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid career id' });
+  }
+
+  const raw = await safeJson(c);
+  const validated = carrerValidation.UPDATE.parse(raw);
+
+  if (Object.keys(validated).length === 0) {
+    throw new HTTPException(400, {
+      message: 'Minimum one field is required to update career',
+    });
+  }
+
+  const response = await CareerService.UpdateCareerById(
+    prisma,
+    id,
+    validated,
+  );
+
+  return c.json(response, 200);
+});
+
+// ===============================
+// DELETE CAREER
+// ===============================
+CareerController.delete('/career/:id', withPrisma, async (c) => {
+  const prisma = c.get('prisma');
+  const id = Number(c.req.param('id'));
+
+  if (Number.isNaN(id)) {
+    throw new HTTPException(400, { message: 'Invalid career id' });
+  }
+
+  const response = await CareerService.DeleteCareerById(prisma, id);
+  return c.json(response, 200);
+});
