@@ -40,7 +40,8 @@ export class NewsService {
       image_news_public_id?: string | null
     }
   ) {
-    return NewsRepository.updateNewsById(prisma, data);
+    const { id, ...updateData } = data;
+    return NewsRepository.updateNewsById(prisma, id, updateData);
   }
   // =====================
 

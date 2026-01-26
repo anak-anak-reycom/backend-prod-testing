@@ -10,6 +10,7 @@ import { CategoryController } from './controllers/category/category-controller.j
 import { NewsController } from './controllers/news/news-controller.js';
 import { CarouselController } from './controllers/carousel/carousel-controller.js';
 import { cors } from 'hono/cors'
+import { VideoController } from './controllers/videos/video-controller.js';
 
 
 const app = new Hono();
@@ -34,6 +35,7 @@ app.route('/', ApplyController);
 app.route('/', CategoryController);
 app.route('/', NewsController);
 app.route('/', CarouselController)
+app.route('/', VideoController);
 
 // ERROR HANDLER
 app.onError((err, c) => {

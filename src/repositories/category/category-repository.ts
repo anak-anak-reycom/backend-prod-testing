@@ -29,12 +29,6 @@ export class CategoryRepository {
         })
     }
 
-    static async getAllCategory(
-        prisma: PrismaClient
-    ) {
-        return prisma.category.findMany()
-    }
-
     static async getAllCategories(
         prisma: PrismaClient
     ) {

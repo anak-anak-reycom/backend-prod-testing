@@ -104,4 +104,42 @@ model NewsCarousel {
   news        News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
 }
 
+model Country {
+  id           Int      @id @default(autoincrement())
+  name_country String   // Indonesia, Singapore, Vietnam
+  companies    Company[]
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("countries")
+}
+
+model Company {
+  id           Int      @id @default(autoincrement())
+  countryId    Int
+  name_company String   // PT Reycom..., PTE LTD, CO.LTD
+  country      Country  @relation(fields: [countryId], references: [id])
+  branches     BranchCompany[]
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("companies")
+}
+
+model BranchCompany {
+  id             Int      @id @default(autoincrement())
+  companyId      Int
+  name_branch    String   // Headquarter, Jakarta, Hanoi Branch
+  street_address String?
+  phone          String?
+  email          String?
+  website        String?
+  company        Company  @relation(fields: [companyId], references: [id])
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("branch_companies")
+}
+
+
 
