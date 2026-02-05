@@ -17,7 +17,7 @@ import { corsMiddleware } from './helpers/cors.js';
 const app = new Hono();
 
 
-app.use(corsMiddleware);
+app.route('/', corsMiddleware);
 
 // ROOT
 app.get('/', (c) => c.text('Hello Hono!'));
