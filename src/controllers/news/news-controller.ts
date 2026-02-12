@@ -19,6 +19,16 @@ NewsController.get("/news", withPrisma, async (c) => {
 });
 
 // ===============================
+// GET NEWS BY ID
+// ===============================
+NewsController.get("/news/:id", withPrisma, async (c) => {
+  const prisma = c.get("prisma");
+  const id_news = Number(c.req.param("id"));
+  const response = await NewsService.getNewsById(prisma, id_news);
+  return c.json(response, 200);
+});
+
+// ===============================
 // CREATE NEWS (JSON)
 // ===============================
 NewsController.post(
@@ -77,5 +87,17 @@ NewsController.patch(
       return c.json(response, 200);
     }
   );
+
+  NewsController.delete(
+    "/news/:id",
+    authAdminMiddleware,
+    withPrisma,
+    async (c) => {
+      const prisma = c.get("prisma");
+      const id_news = Number(c.req.param("id"));
+      const response = await NewsService.deleteNewsById(prisma, id_news);
+      return c.json(response, 200);
+    }
+  )
 
 

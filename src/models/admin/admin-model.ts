@@ -18,6 +18,27 @@ export type LogoutAdminRequest = {
     idAdmin: number;
 };
 
+export interface PaginationMeta {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+export function buildPaginationMeta(
+  page: number,
+  limit: number,
+  total: number
+): PaginationMeta {
+  return {
+    page,
+    limit,
+    total,
+    totalPages: Math.ceil(total / limit),
+  }
+}
+
+
 /* =======================
    DATA RESPONSE
 ======================= */
@@ -33,9 +54,11 @@ export type AdminData = {
 /* =======================
    API RESPONSE WRAPPER
 ======================= */
-export type ApiResponse<T> = {
+export type ApiResponse<T,  M = unknown> = {
     message: string;
+    success: boolean;
     data: T;
+    meta?: M;
 };
 
 export function toAdminData(
@@ -51,16 +74,21 @@ export function toAdminData(
         updatedAt: admin.updated_at,
     };
 }
+
 export function toAdminListResponse(
     applys: Admin[],
-    message: string
-): ApiResponse<AdminData[]> {
+    message: string,
+    page: number,
+    limit: number,
+    total: number
+): ApiResponse<AdminData[], PaginationMeta> {
     return {
+        success: true,
         message,
         data: applys.map((admin) => toAdminData(admin)),
+        meta: buildPaginationMeta(page, limit, total),
     };
 }
-
 
 export function toAdminResponse(
     admin: Admin,
@@ -68,6 +96,7 @@ export function toAdminResponse(
     token?: string
 ): ApiResponse<AdminData> {
     return {
+        success: true,
         message,
         data: toAdminData(admin, token),
     };

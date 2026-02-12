@@ -172,7 +172,11 @@ export class AdminService {
 
     const admins = await AdminRepository.getAllAdmin(prisma);
 
-    return toAdminListResponse(admins, 'Get all admins successfully');
+    const page = 1;
+    const limit = admins.length;
+    const total = admins.length;
+
+    return toAdminListResponse(admins, 'Get all admins successfully', page, limit, total);
   }
 
   // ===============================

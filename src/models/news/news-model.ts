@@ -16,12 +16,6 @@ export interface ApiResponse<T, M = unknown> {
   meta?: M
 }
 
-//
-// =====================================
-// PAGINATION META
-// =====================================
-//
-
 export interface PaginationMeta {
   page: number
   limit: number

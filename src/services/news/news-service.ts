@@ -47,6 +47,20 @@ static async createNews(
   return toNewsListResponse(items, "Success get news", page, limit, total);
 }
 
+// ===============================
+// GET NEWS BY ID
+// ===============================
+static async getNewsById(prisma: PrismaClient, id: number) {
+  const news = await prisma.news.findUnique({
+    where: { id },
+    include: { carousels: true },
+  });
+  if (!news) {
+    throw new HTTPException(404, { message: "News not found" });
+  }
+  return toNewsResponse(news, "Success get news by ID");
+}
+
   // =====================
   // UPDATE NEWS BY ID
   // =====================
@@ -145,5 +159,12 @@ static async createNews(
       fullNews!,
       "News created successfully"
     )
+  }
+
+  static async deleteNewsById(
+    prisma: PrismaClient,
+    id: number
+  ) {
+    return NewsRepository.deleteNewsById(prisma, id);
   }
 }

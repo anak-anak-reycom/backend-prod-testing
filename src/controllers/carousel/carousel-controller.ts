@@ -5,6 +5,7 @@ import { CarouselNewsService } from '../../services/carousel/carousel-service.js
 import type { ContextWithPrisma } from '../../types/context.js';
 import { toAllCarouselResponse, toCarouselResponse } from '../../models/carousel/carousel-model.js';
 import { HTTPException } from 'hono/http-exception';
+import { Prisma } from '../../generated/prisma/client.js';
 
 export const CarouselController = new Hono<ContextWithPrisma>();
 
@@ -83,3 +84,48 @@ CarouselController.post(
     );
   },
 );
+
+CarouselController.patch(
+  '/news/carousel/:id',
+  authAdminMiddleware,
+  withPrisma,
+  async (c) => {
+    const prisma = c.get('prisma');
+    const id = Number(c.req.param('id'));
+    const body = await c.req.parseBody();
+    const data: Prisma.NewsCarouselUpdateInput = {};
+    if (body['image_url'] && typeof body['image_url'] === 'string') {
+      data.image_url = body['image_url'];
+    }
+
+    const response = await CarouselNewsService.updateCarouselById(
+      prisma,
+      id,
+      data,
+    );
+    return c.json(toCarouselResponse(
+      response,
+      'Carousel updated successfully',
+    ));
+  }
+)
+
+CarouselController.delete(
+  '/news/carousel/:id',
+  authAdminMiddleware,
+  withPrisma,
+  async (c) => {
+    const prisma = c.get('prisma');
+    const id = Number(c.req.param('id'));
+    await CarouselNewsService.deleteCarouselById(
+      prisma,
+      id,
+    );
+    return c.json(
+      {
+        message: 'Carousel deleted successfully',
+      },
+      200,
+    );
+  }
+)

@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../generated/prisma/client.js";
+import type { Prisma, PrismaClient } from "../../generated/prisma/client.js";
 import { uploadImageService } from "../../upload/upload-service.js";
 import { NewsRepository } from "../../repositories/news/news-repository.js";
 import { CarouselRepository } from "../../repositories/carousel/newsCarousel-repository.js";
@@ -31,12 +31,26 @@ export class CarouselNewsService {
 
     return carousel;
   }
-  
 
-  // =====================
-  // UPLOAD CAROUSEL ONLY
-  // =====================
-  static async uploadCarouselImages(
+  static async updateCarouselById(
+    prisma: PrismaClient,
+    id: number,
+    data: Prisma.NewsCarouselUpdateInput
+  ) {
+    return CarouselRepository.updateCarouselById(prisma, id, data)
+
+}
+
+static async deleteCarouselById(
+    prisma: PrismaClient,
+    id: number
+) {
+    return prisma.newsCarousel.delete({
+        where: { id },
+    });
+}
+
+static async uploadCarouselImages(
     prisma: PrismaClient,
     newsId: number,
     files: File[]
