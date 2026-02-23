@@ -23,12 +23,6 @@ build
 .env.test
 .env.production
 
-# NOTE:
-# kalau kamu BUTUH .env untuk prisma generate di Dockerfile,
-# JANGAN ignore .env utama
-# jadi JANGAN tulis:
-# .env
-
 # =========================
 # Git
 # =========================

@@ -25,6 +25,9 @@ export const openApiDoc = {
     },
 
     schemas: {
+      
+
+          // ======== career ==========
       CareerCreate: {
         type: 'object',
         required: [
@@ -79,20 +82,73 @@ export const openApiDoc = {
           categoryId: { type: 'integer' },
         },
       },
-    },
 
-    ApplyCreate: {
-      type: 'object',
-      properties: {
-        nameApply: {type: 'string'},
-        emailApply: {type: 'string'},
-        phoneNumberApply: {
-          type: 'number',
-          example: ''
-        }
-      }
-    }
+      ApplyCreate: {
+  type: 'object',
+  required: [
+    'nameApply',
+    'emailApply',
+    'phoneNumberApply',
+    'gender',
+    'domicile',
+    'resume',
+  ],
+  properties: {
+    nameApply: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 50,
+    },
+    emailApply: {
+      type: 'string',
+      format: 'email',
+    },
+    phoneNumberApply: {
+      type: 'string',
+      description: 'Minimum 10 digits',
+    },
+    gender: {
+      type: 'string',
+    },
+    domicile: {
+      type: 'string',
+    },
+    resume: {
+      type: 'string',
+      description: 'Resume file URL or text',
+    },
   },
+  example: {
+    nameApply: 'John Doe',
+    emailApply: 'john@gmail.com',
+    phoneNumberApply: '081234567890',
+    gender: 'Male',
+    domicile: 'Jakarta',
+    resume: 'https://example.com/resume.pdf',
+  },
+},
+
+ApplyUpdate: {
+  type: 'object',
+  properties: {
+    nameApply: { type: 'string' },
+    emailApply: { type: 'string', format: 'email' },
+    phoneNumberApply: { type: 'string' },
+    gender: { type: 'string' },
+    domicile: { type: 'string' },
+    resume: { type: 'string' },
+  },
+  example: {
+    nameApply: 'John Doe Updated',
+    emailApply: 'john.new@gmail.com',
+    phoneNumberApply: '081234567891',
+    gender: 'Female',
+    domicile: 'Bandung',
+    resume: 'https://example.com/resume-new.pdf',
+  },
+},
+    },
+   },
 
   tags: [
     { name: 'Admin', description: 'Admin management APIs' },
@@ -218,8 +274,54 @@ export const openApiDoc = {
     // GENERIC CRUD TEMPLATE (ALL USE TOKEN)
     // ======================================================
 
-    '/apply': crud('Apply', 'application'),
-    '/apply/{id}': crudById('Apply', 'application'),
+    '/apply': {
+      get: crud('Apply', 'application').get,
+      post: {
+        tags: ['Apply'],
+        summary: 'Create application',
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ApplyCreate',
+              },
+            },
+          },
+        },
+        responses: {
+          '201': { description: 'Application created successfully' },
+          '400': { description: 'Validation error' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/apply/{id}': {
+      get: crudById('Apply', 'application').get,
+      patch: {
+        tags: ['Apply'],
+        summary: 'Update application',
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'integer' } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ApplyUpdate',
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Application updated successfully' },
+        },
+      },
+      delete: crudById('Apply', 'application').delete,
+    },
 
     '/career': {
       get: crud('Career', 'career').get,
