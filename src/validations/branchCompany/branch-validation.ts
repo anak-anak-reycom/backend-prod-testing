@@ -25,7 +25,7 @@ export class BranchValidation {
           z
           .string()
           .min(1, 'Street Address must be at least 1 character long')
-          .max(50, 'Street Address maximum 50 characters'),
+          .max(200, 'Street Address maximum 200 characters'),
       ).optional(),
 
     linkMap: z.preprocess(
@@ -33,7 +33,7 @@ export class BranchValidation {
           z
           .string()
           .min(1, 'Link Map must be at least 1 character long')
-          .max(250, 'Link Map maximum 250 characters'),
+          .max(350, 'Link Map maximum 350 characters'),
       ).optional(),
 
     phone: z.preprocess(
@@ -87,7 +87,7 @@ export class BranchValidation {
           z
           .string()
           .min(1, 'Street Address must be at least 1 character long')
-          .max(50, 'Street Address maximum 50 characters'),
+          .max(200, 'Street Address maximum 200 characters'),
       ).optional(),
 
     linkMap: z.preprocess(
@@ -95,7 +95,7 @@ export class BranchValidation {
           z
           .string()
           .min(1, 'Link Map must be at least 1 character long')
-          .max(250, 'Link Map maximum 250 characters'),
+          .max(350, 'Link Map maximum 350 characters'),
       ).optional(),
 
     phone: z.preprocess(
