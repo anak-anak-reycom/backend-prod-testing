@@ -18,10 +18,17 @@ CareerController.post("/career", withPrisma, async (c) => {
 
   const validated = carrerValidation.CREATE.parse(raw);
 
-  const response = await CareerService.CreateCareer(prisma, {
-    job_name: validated.jobName,
-    categoryId: validated.categoryId, 
-  });
+  const response = await CareerService.CreateCareer(
+    prisma,
+    { categoryId: validated.categoryId },
+    {
+      jobName: validated.jobName,
+      jobDate: validated.jobDate,
+      jobDescription: validated.jobDescription,
+      jobResponbilities: validated.jobResponbilities,
+      jobRequirement: validated.jobRequirement,
+    }
+  );
 
   await redis.del("career:all");
   return c.json(response, 201);
@@ -77,7 +84,10 @@ CareerController.patch('/career/:id', withPrisma, async (c) => {
   const validated = carrerValidation.UPDATE.parse(raw);
 
   const response = await CareerService.UpdateCareerById(prisma, id, {
-    job_name: validated.jobName,
+    jobName: validated.jobName,
+    jobDescription: validated.jobDescription,
+    jobResponbilities: validated.jobResponbilities,
+    jobRequirement: validated.jobRequirement,
     categoryId: validated.categoryId,
   });
 
@@ -99,3 +109,4 @@ CareerController.delete("/career/:id", withPrisma, async (c) => {
   await redis.del("career:all");
   return c.json(response, 200);
 });
+

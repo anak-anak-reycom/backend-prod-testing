@@ -45,7 +45,7 @@ function toCareerWithCategory(
     id: career.id,
     jobName: career.job_name,
     jobDate: career.job_date,
-    jobDescription: career.requirement,
+    jobDescription: career.description,
     jobResponbilities: career.responbilities,
     jobRequirement: career.requirement,
     category: career.category

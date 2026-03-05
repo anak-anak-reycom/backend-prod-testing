@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../generated/prisma/client.js";
+import type { PrismaClient, Prisma } from "../../generated/prisma/client.js";
 import { HTTPException } from "hono/http-exception";
 import { CareerRepository } from "../../repositories/career/career-repository.js";
 import {
@@ -14,47 +14,57 @@ export class CareerService {
   // CREATE CAREER
   // ===============================
   static async CreateCareer(
-  prisma: PrismaClient,
-  request: {
-    job_name: string;
-    categoryId?: number;
-  },
-): Promise<ApiResponse<CareerWithCategoryData>> {
+    prisma: PrismaClient,
+    request: {
+      categoryId?: number;
+    },
+    data: {
+      jobName: string;
+      jobDate: Date;
+      jobDescription?: string;
+      jobResponbilities?: string;
+      jobRequirement?: string;
+    }
+  ): Promise<ApiResponse<CareerWithCategoryData>> {
 
-  const total = await CareerRepository.countByNameCareer(
-    prisma,
-    request.job_name,
-  );
+    const total = await CareerRepository.countByNameCareer(
+      prisma,
+      data.jobName,
+    );
 
-  if (total !== 0) {
-    throw new HTTPException(400, {
-      message: 'Career with the same name already exists',
-    });
-  }
-
-  if (request.categoryId !== undefined) {
-    const categoryExists = await prisma.category.findUnique({
-      where: { id: request.categoryId },
-    });
-
-    if (!categoryExists) {
-      throw new HTTPException(404, {
-        message: 'Category not found',
+    if (total !== 0) {
+      throw new HTTPException(400, {
+        message: 'Career with the same name already exists',
       });
     }
+
+    if (request.categoryId !== undefined) {
+      const categoryExists = await prisma.category.findUnique({
+        where: { id: request.categoryId },
+      });
+
+      if (!categoryExists) {
+        throw new HTTPException(404, {
+          message: 'Category not found',
+        });
+      }
+    }
+
+    const career = await CareerRepository.createCareer(prisma, {
+      job_name: data.jobName,
+      job_date: data.jobDate,
+      description: data.jobDescription || null,
+      responbilities: data.jobResponbilities || null,
+      requirement: data.jobRequirement || null,
+      ...(request.categoryId !== undefined && {
+        category: {
+          connect: { id: request.categoryId },
+        },
+      }),
+    });
+
+    return toCareerResponse(career, 'Career created successfully');
   }
-
-  const career = await CareerRepository.createCareer(prisma, {
-    job_name: request.job_name,
-    ...(request.categoryId !== undefined && {
-      category: {
-        connect: { id: request.categoryId },
-      },
-    }),
-  });
-
-  return toCareerResponse(career, 'Career created successfully');
-}
 
 
   // ===============================
@@ -96,46 +106,50 @@ export class CareerService {
   // UPDATE CAREER
   // ===============================
   static async UpdateCareerById(
-  prisma: PrismaClient,
-  id: number,
-  request: {
-    job_name?: string;
-    categoryId?: number | null;
-  },
-): Promise<ApiResponse<CareerWithCategoryData>> {
+    prisma: PrismaClient,
+    id: number,
+    request: {
+      jobName?: string;
+      jobDescription?: string;
+      jobResponbilities?: string;
+      jobRequirement?: string;
+      categoryId?: number | null;
+    },
+  ): Promise<ApiResponse<CareerWithCategoryData>> {
 
-  const career = await CareerRepository.findCareerById(prisma, id);
+    const career = await CareerRepository.findCareerById(prisma, id);
 
-  if (!career) {
-    throw new HTTPException(404, { message: 'Career not found' });
-  }
+    if (!career) {
+      throw new HTTPException(404, { message: 'Career not found' });
+    }
 
-  // 🔥 JIKA categoryId ADA → VALIDASI DULU
-  if (request.categoryId !== undefined && request.categoryId !== null) {
-    const categoryExists = await prisma.category.findUnique({
-      where: { id: request.categoryId },
+    if (request.categoryId !== undefined && request.categoryId !== null) {
+      const categoryExists = await prisma.category.findUnique({
+        where: { id: request.categoryId },
+      });
+
+      if (!categoryExists) {
+        throw new HTTPException(400, {
+          message: 'Category not found',
+        });
+      }
+    }
+
+    const updated = await CareerRepository.updateCareerById(prisma, id, {
+      ...(request.jobName && { job_name: request.jobName }),
+      ...(request.jobDescription !== undefined && { description: request.jobDescription }),
+      ...(request.jobResponbilities !== undefined && { responbilities: request.jobResponbilities }),
+      ...(request.jobRequirement !== undefined && { requirement: request.jobRequirement }),
+      ...(request.categoryId !== undefined && {
+        category:
+          request.categoryId === null
+            ? { disconnect: true }
+            : { connect: { id: request.categoryId } },
+      }),
     });
 
-    if (!categoryExists) {
-      throw new HTTPException(400, {
-        message: 'Category not found',
-      });
-    }
+    return toCareerResponse(updated, 'Career updated successfully');
   }
-
-  const updated = await CareerRepository.updateCareerById(prisma, id, {
-    ...(request.job_name && { job_name: request.job_name }),
-
-    ...(request.categoryId !== undefined && {
-      category:
-        request.categoryId === null
-          ? { disconnect: true } // 👈 hapus category
-          : { connect: { id: request.categoryId } },
-    }),
-  });
-
-  return toCareerResponse(updated, 'Career updated successfully');
-}
 
 
   // ===============================
@@ -159,3 +173,4 @@ export class CareerService {
     return toCareerResponse(existing, "Career deleted successfully");
   }
 }
+
