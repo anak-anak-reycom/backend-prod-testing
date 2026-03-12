@@ -44,7 +44,7 @@ export class carrerValidation {
       z
         .string()
         .min(1, 'Job Responbilities must be at least 1 character long')
-        .max(200, 'Job Responbilities maximum 200 characters'),
+        .max(800, 'Job Responbilities maximum 800 characters'),
     ),
     
      jobRequirement: z.preprocess(
@@ -75,7 +75,7 @@ export class carrerValidation {
         z
           .string()
           .min(1, 'Job Description must be at least 1 character long')
-          .max(200, 'Job Description maximum 200 characters').optional(),
+          .max(800, 'Job Description maximum 800 characters').optional(),
       ),
 
       jobResponbilities: z.preprocess(
@@ -91,7 +91,7 @@ export class carrerValidation {
         z
           .string()
           .min(1, 'Job Responbilities must be at least 1 character long')
-          .max(200, 'Job Responbilities maximum 200 characters').optional(),
+          .max(800, 'Job Responbilities maximum 800 characters').optional(),
       ),
         categoryId: z.preprocess(
             (v) => (v == null ? undefined : v),
