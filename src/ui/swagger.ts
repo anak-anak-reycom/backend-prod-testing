@@ -1,3 +1,5 @@
+import {schema} from "../ui/schema.js"
+
 export const openApiDoc = {
   openapi: '3.0.0',
 
@@ -25,6 +27,8 @@ export const openApiDoc = {
     },
 
     schemas: {
+  
+          // ======== career ==========
       CareerCreate: {
         type: 'object',
         required: [
@@ -79,19 +83,147 @@ export const openApiDoc = {
           categoryId: { type: 'integer' },
         },
       },
-    },
 
-    ApplyCreate: {
+  // ======== Apply ==========
+   ApplyCreate: {
       type: 'object',
+      required: [
+        'nameApply',
+        'emailApply',
+        'phoneNumberApply',
+        'gender',
+        'domicile',
+        'resume',
+      ],
       properties: {
-        nameApply: {type: 'string'},
-        emailApply: {type: 'string'},
+        nameApply: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 50,
+        },
+        emailApply: {
+          type: 'string',
+          format: 'email',
+        },
         phoneNumberApply: {
-          type: 'number',
-          example: ''
+          type: 'string',
+          description: 'Minimum 10 digits',
+        },
+        gender: {
+          type: 'string',
+        },
+        domicile: {
+          type: 'string',
+        },
+        resume: {
+          type: 'string',
+          description: 'Resume file URL or text',
+        },
+          },
+          example: {
+            nameApply: 'John Doe',
+            emailApply: 'john@gmail.com',
+            phoneNumberApply: '081234567890',
+            gender: 'Male',
+            domicile: 'Jakarta',
+            resume: 'https://example.com/resume.pdf',
+          },
+        },
+
+        ApplyUpdate: {
+          type: 'object',
+          properties: {
+            nameApply: { type: 'string' },
+            emailApply: { type: 'string', format: 'email' },
+            phoneNumberApply: { type: 'string' },
+            gender: { type: 'string' },
+            domicile: { type: 'string' },
+            resume: { type: 'string' },
+          },
+          example: {
+            nameApply: 'John Doe Updated',
+            emailApply: 'john.new@gmail.com',
+            phoneNumberApply: '081234567891',
+            gender: 'Female',
+            domicile: 'Bandung',
+            resume: 'https://example.com/resume-new.pdf',
+          },
+        },
+
+        CategoryCreate: {
+          type: 'object',
+          properties: {
+            nameCategory: {type: 'string'},
+            jobType: { type: 'string'}
+          },
+          example: {
+            nameCategory: { type: 'string' },
+            jobType: { type: 'string'}
+          }
+        },
+
+        CategoryUpdate: {
+          type: 'object',
+          properties: {
+            nameCategory: {type: 'string'},
+            jobType: { type: 'string'}
+          },
+          example: {
+            nameCategory: { type: 'string' },
+            jobType: { type: 'string'}
+          }
+        },
+
+        NewsCreate: {
+          type: 'object',
+          properties: {
+            title: { type: 'string'},
+            content: { type: 'string'},
+          }
+        },
+
+        BranchCreate: {
+        type: 'object',
+        properties: {
+          nameBranch: {type: 'string'},
+          companyId: { type: 'integer'},
+          streetAddress: { type: 'string'},
+          linkMap : { type: 'string' },
+          phone: { type: 'integer'},
+          email: { type: 'string', format: 'email'},
+          website: { type: 'string'},
+        },
+        exampe: {
+          nameBranch: 'RDS Semarang',
+          companyId: 2,
+          streetAdress: 'JL.Indraprasta',
+          phone: 6292834992,
+          email: 'rdssemarang@gmail.com',
+          website: 'https://rds.co.id'
+        }
+      },
+
+      BranchUpdate: {
+        type: 'object',
+        properties: {
+          nameBranch: {type: 'string'},
+          companyId: { type: 'integer'},
+          streetAddress: { type: 'string'},
+          linkMap : { type: 'string' },
+          phone: { type: 'integer'},
+          email: { type: 'string', format: 'email'},
+          website: { type: 'string'},
+        },
+        exampe: {
+          nameBranch: 'RDS Semarang',
+          companyId: 2,
+          streetAdress: 'JL.Indraprasta',
+          phone: 6292834992,
+          email: 'rdssemarang@gmail.com',
+          website: 'https://rds.co.id'
         }
       }
-    }
+    },
   },
 
   tags: [
@@ -218,8 +350,54 @@ export const openApiDoc = {
     // GENERIC CRUD TEMPLATE (ALL USE TOKEN)
     // ======================================================
 
-    '/apply': crud('Apply', 'application'),
-    '/apply/{id}': crudById('Apply', 'application'),
+    '/apply': {
+      get: crud('Apply', 'application').get,
+      post: {
+        tags: ['Apply'],
+        summary: 'Create application',
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ApplyCreate',
+              },
+            },
+          },
+        },
+        responses: {
+          '201': { description: 'Application created successfully' },
+          '400': { description: 'Validation error' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/apply/{id}': {
+      get: crudById('Apply', 'application').get,
+      patch: {
+        tags: ['Apply'],
+        summary: 'Update application',
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'integer' } },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ApplyUpdate',
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Application updated successfully' },
+        },
+      },
+      delete: crudById('Apply', 'application').delete,
+    },
 
     '/career': {
       get: crud('Career', 'career').get,
@@ -271,8 +449,55 @@ export const openApiDoc = {
       delete: crudById('Career', 'career').delete,
     },
 
-    '/category': crud('Category', 'category'),
-    '/category/{id}': crudById('Category', 'category'),
+    '/category': {
+  get: crud('Category', 'category').get,
+  post: {
+    tags: ['Category'],
+    summary: 'Create category',
+    security: [{ BearerAuth: [] }],
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/CategoryCreate',
+          },
+        },
+      },
+    },
+    responses: {
+      '201': { description: 'Category created successfully' },
+      '400': { description: 'Validation error' },
+      '401': { description: 'Unauthorized' },
+    },
+  },
+},
+
+'/category/{id}': {
+  get: crudById('Category', 'category').get,
+  patch: {
+    tags: ['Category'],
+    summary: 'Update category',
+    security: [{ BearerAuth: [] }],
+    parameters: [
+      { name: 'id', in: 'path', required: true, schema: { type: 'integer' } },
+    ],
+    requestBody: {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            $ref: '#/components/schemas/CategoryUpdate',
+          },
+        },
+      },
+    },
+    responses: {
+      '200': { description: 'Category updated successfully' },
+    },
+  },
+    delete: crudById('Category', 'category').delete,
+    },
 
     '/country': crud('Country', 'country'),
     '/country/{id}': crudById('Country', 'country'),
@@ -289,8 +514,52 @@ export const openApiDoc = {
     '/company': crud('Company', 'company'),
     '/company/{id}': crudById('Company', 'company'),
 
-    '/branch': crud('Branch', 'branch'),
-    '/branch/{id}': crudById('Branch', 'branch'),
+    '/branch' : {
+      get: crudById('Branch', 'branch').get,
+      post: {
+        tags: ['Branch'],
+        summary: 'Create branch',
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/BranchCreate',
+              },
+            },
+          },
+        },
+        responses: {
+          '201': { description: 'Branch created successfully' },
+          '400': { description: 'Validation error' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/branch/{id}': {
+      get: crudById('Branch', 'branch').get,
+      patch: {
+        tags: ['Branch'],
+        summary: 'Update branch',
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/BranchCreate',
+              },
+            },
+          },
+        },
+        responses: {
+          '201': { description: 'Branch created successfully' },
+          '400': { description: 'Validation error' },
+          '401': { description: 'Unauthorized' },
+        },
+      },
+    }
   },
 }
 

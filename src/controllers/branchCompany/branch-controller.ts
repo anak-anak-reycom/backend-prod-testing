@@ -26,6 +26,8 @@ BranchController.post('/branch', withPrisma, async (c) => {
     website: validated.website
   })
 
+  
+
   await redis.del("branch:all")
   return c.json(response, 201)
 })
